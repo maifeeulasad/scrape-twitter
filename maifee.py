@@ -37,10 +37,10 @@ while True:
         times_n_urls = scope.find_elements(
             By.XPATH, "//div[@class='css-1dbjc4n r-18u37iz r-1q142lx']"
         )
-        for tweets, time_n_url in zip(tweets, times_n_urls):
+        for tweet, time_n_url in zip(tweets, times_n_urls):
             print("serial : ", count)
             # print(re.sub('<[^<]+?>', '', tweets.get_attribute("innerHTML")))
-            post_text = tweets.get_attribute("innerHTML")
+            post_text = tweet.get_attribute("innerHTML")
             print(post_text)
             print("")
 
