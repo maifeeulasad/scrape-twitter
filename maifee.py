@@ -11,6 +11,13 @@ driver.get(base_url + "bbcbangla")
 sleep(3)
 count = 0
 
+__PAGE = "//div[@class='css-1dbjc4n r-1igl3o0 r-qklmqi r-1adg3ll r-1ny4l3l']"
+__TWEETS = "//div[@class='css-901oao r-1nao33i r-37j5jr r-a023e6 r-16dba41 r-rjixqe r-bcqeeo r-bnwqim r-qvutc0']"
+__TIMES_N_URLS = "//div[@class='css-1dbjc4n r-18u37iz r-1q142lx']"
+__OPTIONS_REPLIES_RETWEETS_LIKES_SHARES = (
+    "//div[@class='css-901oao r-1awozwy r-1bwzh9t r-6koalj r-37j5jr r-a023e6 r-16dba41 r-1h0z5md r-rjixqe r-bcqeeo r-o7ynqc r-clp7b1 r-3s2u2q r-qvutc0']",
+)
+
 
 """
 css-1dbjc4n r-18u37iz r-1q142lx       <<----- Post URL, Post Time
@@ -26,25 +33,21 @@ while True:
     if count >= 20:  # at least 20
         break
     sleep(2)
-    tweets_in_page = driver.find_elements(
-        By.XPATH, "//div[@class='css-1dbjc4n r-1igl3o0 r-qklmqi r-1adg3ll r-1ny4l3l']"
-    )
+    tweets_in_page = driver.find_elements(By.XPATH, __PAGE)
     for scope in tweets_in_page:
         tweets = scope.find_elements(
             By.XPATH,
-            "//div[@class='css-901oao r-1nao33i r-37j5jr r-a023e6 r-16dba41 r-rjixqe r-bcqeeo r-bnwqim r-qvutc0']",
+            __TWEETS,
         )
-        times_n_urls = scope.find_elements(
-            By.XPATH, "//div[@class='css-1dbjc4n r-18u37iz r-1q142lx']"
-        )
+        times_n_urls = scope.find_elements(By.XPATH, __TIMES_N_URLS)
         options_replies_retweets_likes_shares = scope.find_elements(
-            By.XPATH,
-            "//div[@class='css-901oao r-1awozwy r-1bwzh9t r-6koalj r-37j5jr r-a023e6 r-16dba41 r-1h0z5md r-rjixqe r-bcqeeo r-o7ynqc r-clp7b1 r-3s2u2q r-qvutc0']",
+            By.XPATH, __OPTIONS_REPLIES_RETWEETS_LIKES_SHARES
         )
         options_replies_retweets_likes_shares = [
             options_replies_retweets_likes_shares[5 * x : 5 * x + 5]
             for x in range(0, int(len(options_replies_retweets_likes_shares) / 5))
         ]
+
         for tweet, time_n_url, option_reply_retweet_like_share in zip(
             tweets, times_n_urls, options_replies_retweets_likes_shares
         ):
