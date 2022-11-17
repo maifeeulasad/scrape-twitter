@@ -49,33 +49,39 @@ class Tweet(object):
         self.count_retweet = 0
         self.count_like = 0
 
-    def parse_text_from_text__element(self,text_element: WebElement) -> str:
+    def parse_text_from_text__element(self, text_element: WebElement) -> str:
         return text_element.get_attribute(
             "innerHTML"
         )  # print(re.sub('<[^<]+?>', '', tweets.get_attribute("innerHTML")))
 
-    def parse_time_from_time__n__url_element(self,time__n__url_element: WebElement) -> str:
+    def parse_time_from_time__n__url_element(
+        self, time__n__url_element: WebElement
+    ) -> str:
         return time__n__url_element.find_element(By.TAG_NAME, "time").get_attribute(
             "datetime"
         )
 
-    def parse_count__reply_from_reply__element(self,reply_element: WebElement) -> int:
+    def parse_count__reply_from_reply__element(self, reply_element: WebElement) -> int:
         return reply_element.find_elements(By.TAG_NAME, "span")[2].get_attribute(
             "innerHTML"
         )
 
-    def parse_count__retweet_from_retweet__element(self,retweet_element: WebElement) -> int:
+    def parse_count__retweet_from_retweet__element(
+        self, retweet_element: WebElement
+    ) -> int:
         return retweet_element.find_elements(By.TAG_NAME, "span")[2].get_attribute(
             "innerHTML"
         )
 
-    def parse_count__like_from_like__element(self,like_element: WebElement) -> int:
+    def parse_count__like_from_like__element(self, like_element: WebElement) -> int:
         return like_element.find_elements(By.TAG_NAME, "span")[2].get_attribute(
             "innerHTML"
         )
 
-    def parse_url_from_time__n__url_element(self,time__n__url_element: WebElement) -> str:
-        return time_n_url.find_element(By.TAG_NAME, "a").get_attribute("href")
+    def parse_url_from_time__n__url_element(
+        self, time__n__url_element: WebElement
+    ) -> str:
+        return time__n__url_element.find_element(By.TAG_NAME, "a").get_attribute("href")
 
     def parse_from_elements(self, tweet_elements: List[WebElement]) -> Tweet:
         text_element, time_n_url, option_reply_retweet_like_share = (
@@ -130,9 +136,14 @@ while True:
         options_replies_retweets_likes_shares = scope.find_elements(
             By.XPATH, __OPTIONS_REPLIES_RETWEETS_LIKES_SHARES
         )
+        magic_number_count = 5
         options_replies_retweets_likes_shares = [
-            options_replies_retweets_likes_shares[5 * x : 5 * x + 5]
-            for x in range(0, int(len(options_replies_retweets_likes_shares) / 5))
+            options_replies_retweets_likes_shares[
+                magic_number_count * x : magic_number_count * x + magic_number_count
+            ]
+            for x in range(
+                0, int(len(options_replies_retweets_likes_shares) / magic_number_count)
+            )
         ]
 
         for text, time_n_url, option_reply_retweet_like_share in zip(
