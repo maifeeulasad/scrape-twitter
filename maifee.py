@@ -4,10 +4,10 @@ from time import sleep
 
 # import re
 
-# base_url =
+base_url = "https://twitter.com/"
 
 driver = webdriver.Chrome()
-driver.get("https://twitter.com/bbcbangla")
+driver.get(base_url + "bbcbangla")
 sleep(3)
 count = 0
 
@@ -23,7 +23,7 @@ Fields to Scrape: Posts, Post URL, Post Time, Post Text, No. of Comments, No. of
 """
 
 while True:
-    if count >= 20:  # atlease 20
+    if count >= 20:  # at least 20
         break
     sleep(2)
     tweets = driver.find_elements(
@@ -34,22 +34,28 @@ while True:
             By.XPATH,
             "//div[@class='css-901oao r-1nao33i r-37j5jr r-a023e6 r-16dba41 r-rjixqe r-bcqeeo r-bnwqim r-qvutc0']",
         )
-        times = tweet.find_elements(
+        times_n_urls = tweet.find_elements(
             By.XPATH, "//div[@class='css-1dbjc4n r-18u37iz r-1q142lx']"
         )
-        for text, time in zip(texts, times):
-            print("count : ", count)
+        for text, time_n_url in zip(texts, times_n_urls):
+            print("serial : ", count)
             # print(re.sub('<[^<]+?>', '', text.get_attribute("innerHTML")))
             post_text = text.get_attribute("innerHTML")
             print(post_text)
             print("")
 
-            post_time = time.find_element(By.XPATH, "//time").get_attribute("datetime")
+            post_time = time_n_url.find_element(By.TAG_NAME, "time").get_attribute(
+                "datetime"
+            )
             print(post_time)
             print("")
 
+            post_url = time_n_url.find_element(By.TAG_NAME, "a").get_attribute("href")
+            print(post_url)
+            print("")
+
             count += 1
-            if count >= 20:  # atlease 20
+            if count >= 20:  # at least 20
                 break
 
         print("------------")
