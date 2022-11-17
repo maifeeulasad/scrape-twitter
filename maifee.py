@@ -37,7 +37,17 @@ while True:
         times_n_urls = scope.find_elements(
             By.XPATH, "//div[@class='css-1dbjc4n r-18u37iz r-1q142lx']"
         )
-        for tweet, time_n_url in zip(tweets, times_n_urls):
+        options_replies_retweets_likes_shares = scope.find_elements(
+            By.XPATH,
+            "//div[@class='css-901oao r-1awozwy r-1bwzh9t r-6koalj r-37j5jr r-a023e6 r-16dba41 r-1h0z5md r-rjixqe r-bcqeeo r-o7ynqc r-clp7b1 r-3s2u2q r-qvutc0']",
+        )
+        options_replies_retweets_likes_shares = [
+            options_replies_retweets_likes_shares[5 * x : 5 * x + 5]
+            for x in range(0, int(len(options_replies_retweets_likes_shares) / 5))
+        ]
+        for tweet, time_n_url, option_reply_retweet_like_share in zip(
+            tweets, times_n_urls, options_replies_retweets_likes_shares
+        ):
             print("serial : ", count)
             # print(re.sub('<[^<]+?>', '', tweets.get_attribute("innerHTML")))
             post_text = tweet.get_attribute("innerHTML")
@@ -53,6 +63,25 @@ while True:
             post_url = time_n_url.find_element(By.TAG_NAME, "a").get_attribute("href")
             print(post_url)
             print("")
+
+            reply_count = (
+                option_reply_retweet_like_share[1]
+                .find_elements(By.TAG_NAME, "span")[2]
+                .get_attribute("innerHTML")
+            )
+            print(reply_count)
+            retweet_count = (
+                option_reply_retweet_like_share[2]
+                .find_elements(By.TAG_NAME, "span")[2]
+                .get_attribute("innerHTML")
+            )
+            print(retweet_count)
+            like_count = (
+                option_reply_retweet_like_share[3]
+                .find_elements(By.TAG_NAME, "span")[2]
+                .get_attribute("innerHTML")
+            )
+            print(like_count)
 
             count += 1
             if count >= 20:  # at least 20
