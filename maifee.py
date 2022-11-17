@@ -18,10 +18,10 @@ Fields to Scrape:
  [x] No. of Comments, 
  [x] No. of Retweets, 
  [x] No. of Likes, 
- [ ]Commenter Name, 
- [ ]Commenter profile URL, 
- [ ]Comment time, 
- [ ]Comment, 
+ [x]Commenter Name, 
+ [x]Commenter profile URL, 
+ [x]Comment time, 
+ [x]Comment, 
  [ ]Who Retweets, 
  [ ]Retweet Te[x]t, 
  [ ]Retweeter URL
@@ -40,34 +40,74 @@ __TIMES_N_URLS = "//div[@class='css-1dbjc4n r-18u37iz r-1q142lx']"
 __OPTIONS_REPLIES_RETWEETS_LIKES_SHARES = "//div[@class='css-901oao r-1awozwy r-1bwzh9t r-6koalj r-37j5jr r-a023e6 r-16dba41 r-1h0z5md r-rjixqe r-bcqeeo r-o7ynqc r-clp7b1 r-3s2u2q r-qvutc0']"
 
 
+# __USERNAME = "css-901oao css-16my406 css-1hf3ou5 r-poiln3 r-bcqeeo r-qvutc0"
+
+
 class Comment(object):
     def __init__(self) -> None:
         self.commenter_name = ""
         self.commenter_url = ""
         self.comment_time = ""
         self.comment = ""
-        self.__COMMENTS = (
-            "//div[@class='css-1dbjc4n r-1iusvr4 r-16y2uox r-1777fci r-kzbkwu']"
-        )
+        self.__USERNAME = "//span[@class='css-901oao css-16my406 css-1hf3ou5 r-poiln3 r-bcqeeo r-qvutc0']"
+        self.__USER_PROFILE = "//a[@class='css-4rbku5 css-18t94o4 css-1dbjc4n r-1loqt21 r-1wbh5a2 r-dnmrzs r-1ny4l3l']"
+        self.__TIME_AND_URL = "//div[@class='css-1dbjc4n r-18u37iz r-1q142lx']"
+        self.__COMMENT = "//div[@class='css-901oao r-1nao33i r-37j5jr r-a023e6 r-16dba41 r-rjixqe r-bcqeeo r-bnwqim r-qvutc0']"
 
-    def parse_time_from_comment__element(self, time__n__url_element: WebElement) -> str:
-        return time__n__url_element.find_element(By.TAG_NAME, "time").get_attribute(
+    def parse_commenter__name_from_comment__element(
+        self, commenter_name_element: WebElement
+    ) -> str:
+        return commenter_name_element.get_attribute("innerHTML")
+
+    def parse_commenter__url_from_comment__element(
+        self, commenter_url_element: WebElement
+    ) -> str:
+        return commenter_url_element.get_attribute("href")
+
+    
+    def parse_comment__link_from_comment__element(
+        self, comment__time_element: WebElement
+    ) -> str:
+        return comment__time_element.find_element(By.TAG_NAME, "a").get_attribute('href')
+
+    def parse_comment__time_from_comment__element(
+        self, comment__time_element: WebElement
+    ) -> str:
+        return comment__time_element.find_element(By.TAG_NAME, "time").get_attribute(
             "datetime"
         )
 
-    def parse_comment(self, comment_element: WebElement) -> Comment:
-        self.comment_time = self.parse_time_from_comment__element(comment_element)
+    def parse_comment_from_comment__element(self, comment_element: WebElement) -> str:
+        return comment_element.get_attribute("innerHTML")
+
+    def parse_comment_details(
+        self, commenter_name_element: WebElement, commenter_url_element: WebElement,  comment_time_element: WebElement, comment_element: WebElement 
+    ) -> Comment:
+        self.commenter_name = self.parse_commenter__name_from_comment__element(
+            commenter_name_element
+        )
+        self.commenter_url = self.parse_commenter__url_from_comment__element(
+            commenter_url_element
+        )
+        self.comment_time = self.parse_comment__time_from_comment__element(comment_time_element)
+        self.comment = self.parse_comment_from_comment__element(comment_element)
         return self
 
     def parse_all_comments(self) -> List[Comment]:
-        global __COMMENTS
-        comment_elements = driver.find_elements(By.XPATH, self.__COMMENTS)
         comments = []
-        for comment_element in comment_elements:
-            comment = self.parse_comment(comment_element)
+
+        username_elements = driver.find_elements(By.XPATH, self.__USERNAME)[1:]
+        userprofile_elements = driver.find_elements(By.XPATH, self.__USER_PROFILE)[2:][
+            ::2
+        ]
+        times_and_urls = driver.find_elements(By.XPATH, self.__TIME_AND_URL)
+        parse_comment_elements = driver.find_elements(By.XPATH, self.__COMMENT)
+
+        for username_element, userprofile_element, time_n_url_element, parse_comment_element in zip(
+            username_elements, userprofile_elements, times_and_urls, parse_comment_elements
+        ):
+            comment = self.parse_comment_details(username_element, userprofile_element, time_n_url_element, parse_comment_element)
             comments.append(comment)
-            print(comment)
-            break
 
         return comments
 
