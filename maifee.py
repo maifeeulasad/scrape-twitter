@@ -40,9 +40,6 @@ __TIMES_N_URLS = "//div[@class='css-1dbjc4n r-18u37iz r-1q142lx']"
 __OPTIONS_REPLIES_RETWEETS_LIKES_SHARES = "//div[@class='css-901oao r-1awozwy r-1bwzh9t r-6koalj r-37j5jr r-a023e6 r-16dba41 r-1h0z5md r-rjixqe r-bcqeeo r-o7ynqc r-clp7b1 r-3s2u2q r-qvutc0']"
 
 
-# __USERNAME = "css-901oao css-16my406 css-1hf3ou5 r-poiln3 r-bcqeeo r-qvutc0"
-
-
 class Comment(object):
     def __init__(self) -> None:
         self.commenter_name = ""
@@ -64,12 +61,6 @@ class Comment(object):
     ) -> str:
         return commenter_url_element.get_attribute("href")
 
-    
-    def parse_comment__link_from_comment__element(
-        self, comment__time_element: WebElement
-    ) -> str:
-        return comment__time_element.find_element(By.TAG_NAME, "a").get_attribute('href')
-
     def parse_comment__time_from_comment__element(
         self, comment__time_element: WebElement
     ) -> str:
@@ -81,7 +72,11 @@ class Comment(object):
         return comment_element.get_attribute("innerHTML")
 
     def parse_comment_details(
-        self, commenter_name_element: WebElement, commenter_url_element: WebElement,  comment_time_element: WebElement, comment_element: WebElement 
+        self,
+        commenter_name_element: WebElement,
+        commenter_url_element: WebElement,
+        comment_time_element: WebElement,
+        comment_element: WebElement,
     ) -> Comment:
         self.commenter_name = self.parse_commenter__name_from_comment__element(
             commenter_name_element
@@ -89,7 +84,9 @@ class Comment(object):
         self.commenter_url = self.parse_commenter__url_from_comment__element(
             commenter_url_element
         )
-        self.comment_time = self.parse_comment__time_from_comment__element(comment_time_element)
+        self.comment_time = self.parse_comment__time_from_comment__element(
+            comment_time_element
+        )
         self.comment = self.parse_comment_from_comment__element(comment_element)
         return self
 
@@ -103,10 +100,23 @@ class Comment(object):
         times_and_urls = driver.find_elements(By.XPATH, self.__TIME_AND_URL)
         parse_comment_elements = driver.find_elements(By.XPATH, self.__COMMENT)
 
-        for username_element, userprofile_element, time_n_url_element, parse_comment_element in zip(
-            username_elements, userprofile_elements, times_and_urls, parse_comment_elements
+        for (
+            username_element,
+            userprofile_element,
+            time_n_url_element,
+            parse_comment_element,
+        ) in zip(
+            username_elements,
+            userprofile_elements,
+            times_and_urls,
+            parse_comment_elements,
         ):
-            comment = self.parse_comment_details(username_element, userprofile_element, time_n_url_element, parse_comment_element)
+            comment = self.parse_comment_details(
+                username_element,
+                userprofile_element,
+                time_n_url_element,
+                parse_comment_element,
+            )
             comments.append(comment)
 
         return comments
@@ -124,6 +134,9 @@ class Comment(object):
             self.to_dict(),
             indent=4,
         )
+
+    def __repr__(self) -> str:
+        return self.__str__()
 
 
 class Tweet(object):
@@ -204,7 +217,7 @@ class Tweet(object):
             "count_reply": self.count_reply,
             "count_retweet": self.count_retweet,
             "count_like": self.count_like,
-            # "comments": self.comments,
+            "comments": [x.__str__() for x in self.comments],
         }
 
     def __str__(self) -> str:
@@ -212,6 +225,9 @@ class Tweet(object):
             self.to_dict(),
             indent=4,
         )
+
+    def __repr__(self) -> str:
+        return self.__str__()
 
     def _return_to_old_path(self) -> None:
         driver.back()
@@ -274,6 +290,7 @@ while True:
     driver.execute_script("window.scrollTo(0, document.body.scrollHeight)")
 
 
-# print(tweets)
+with open("out.json", "w+") as output_file:
+    output_file.write("[" + "\n\n,\n\n".join([tweet.__str__() for tweet in tweets]) + "]")
 
 driver.quit()
