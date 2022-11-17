@@ -4,7 +4,7 @@ from selenium.webdriver.remote.webelement import WebElement
 from selenium import webdriver
 from time import sleep
 import json
-from typing import List
+from typing import List, Dict
 
 # import re
 
@@ -40,6 +40,52 @@ __TIMES_N_URLS = "//div[@class='css-1dbjc4n r-18u37iz r-1q142lx']"
 __OPTIONS_REPLIES_RETWEETS_LIKES_SHARES = "//div[@class='css-901oao r-1awozwy r-1bwzh9t r-6koalj r-37j5jr r-a023e6 r-16dba41 r-1h0z5md r-rjixqe r-bcqeeo r-o7ynqc r-clp7b1 r-3s2u2q r-qvutc0']"
 
 
+class Comment(object):
+    def __init__(self) -> None:
+        self.commenter_name = ""
+        self.commenter_url = ""
+        self.comment_time = ""
+        self.comment = ""
+        self.__COMMENTS = (
+            "//div[@class='css-1dbjc4n r-1iusvr4 r-16y2uox r-1777fci r-kzbkwu']"
+        )
+
+    def parse_time_from_comment__element(self, time__n__url_element: WebElement) -> str:
+        return time__n__url_element.find_element(By.TAG_NAME, "time").get_attribute(
+            "datetime"
+        )
+
+    def parse_comment(self, comment_element: WebElement) -> Comment:
+        self.comment_time = self.parse_time_from_comment__element(comment_element)
+        return self
+
+    def parse_all_comments(self) -> List[Comment]:
+        global __COMMENTS
+        comment_elements = driver.find_elements(By.XPATH, self.__COMMENTS)
+        comments = []
+        for comment_element in comment_elements:
+            comment = self.parse_comment(comment_element)
+            comments.append(comment)
+            print(comment)
+            break
+
+        return comments
+
+    def to_dict(self) -> Dict:
+        return {
+            "commenter_name": self.commenter_name,
+            "commenter_url": self.commenter_url,
+            "comment_time": self.comment_time,
+            "comment": self.comment,
+        }
+
+    def __str__(self) -> str:
+        return json.dumps(
+            self.to_dict(),
+            indent=4,
+        )
+
+
 class Tweet(object):
     def __init__(self):
         self.post_text = ""
@@ -48,6 +94,7 @@ class Tweet(object):
         self.count_reply = 0
         self.count_retweet = 0
         self.count_like = 0
+        self.comments = []
 
     def parse_text_from_text__element(self, text_element: WebElement) -> str:
         return text_element.get_attribute(
@@ -106,21 +153,41 @@ class Tweet(object):
             retweet_element
         )
         self.count_like = self.parse_count__like_from_like__element(like_element)
+        self.get_comments()
         return self
+
+    def to_dict(self) -> Dict:
+        return {
+            "post_text": self.post_text,
+            "post_time": self.post_time,
+            "post_url": self.post_url,
+            "count_reply": self.count_reply,
+            "count_retweet": self.count_retweet,
+            "count_like": self.count_like,
+            # "comments": self.comments,
+        }
 
     def __str__(self) -> str:
         return json.dumps(
-            {
-                "post_text": self.post_text,
-                "post_time": self.post_time,
-                "post_url": self.post_url,
-                "count_reply": self.count_reply,
-                "count_retweet": self.count_retweet,
-                "count_like": self.count_like,
-            },
+            self.to_dict(),
             indent=4,
         )
 
+    def _return_to_old_path(self) -> None:
+        driver.back()
+
+    def _open_tweet_page(self) -> None:
+        driver.get(self.post_url)
+
+    def get_comments(self) -> Tweet:
+        self._open_tweet_page()
+        sleep(2)
+        self.comments = Comment().parse_all_comments()
+        self._return_to_old_path()
+        return self
+
+
+tweets = []
 
 while True:
     if count >= 20:  # at least 20
@@ -152,7 +219,9 @@ while True:
             tweet_instance = Tweet().parse_from_elements(
                 [text, time_n_url, option_reply_retweet_like_share]
             )
-            print(tweet_instance)
+            tweets.append(tweet_instance)
+            # print(tweet_instance)
+            break
 
             count += 1
             if count >= 20:  # at least 20
@@ -163,4 +232,8 @@ while True:
     break
     count += 1
     driver.execute_script("window.scrollTo(0, document.body.scrollHeight)")
+
+
+# print(tweets)
+
 driver.quit()
