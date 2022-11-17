@@ -26,21 +26,21 @@ while True:
     if count >= 20:  # at least 20
         break
     sleep(2)
-    tweets = driver.find_elements(
+    tweets_in_page = driver.find_elements(
         By.XPATH, "//div[@class='css-1dbjc4n r-1igl3o0 r-qklmqi r-1adg3ll r-1ny4l3l']"
     )
-    for tweet in tweets:
-        texts = tweet.find_elements(
+    for scope in tweets_in_page:
+        tweets = scope.find_elements(
             By.XPATH,
             "//div[@class='css-901oao r-1nao33i r-37j5jr r-a023e6 r-16dba41 r-rjixqe r-bcqeeo r-bnwqim r-qvutc0']",
         )
-        times_n_urls = tweet.find_elements(
+        times_n_urls = scope.find_elements(
             By.XPATH, "//div[@class='css-1dbjc4n r-18u37iz r-1q142lx']"
         )
-        for text, time_n_url in zip(texts, times_n_urls):
+        for tweets, time_n_url in zip(tweets, times_n_urls):
             print("serial : ", count)
-            # print(re.sub('<[^<]+?>', '', text.get_attribute("innerHTML")))
-            post_text = text.get_attribute("innerHTML")
+            # print(re.sub('<[^<]+?>', '', tweets.get_attribute("innerHTML")))
+            post_text = tweets.get_attribute("innerHTML")
             print(post_text)
             print("")
 
