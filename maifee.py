@@ -54,7 +54,7 @@ class Comment(object):
     def parse_commenter__name_from_comment__element(
         self, commenter_name_element: WebElement
     ) -> str:
-        return commenter_name_element.get_attribute("innerHTML")
+        return commenter_name_element.get_attribute("innerHTML")# .encode('utf-8')
 
     def parse_commenter__url_from_comment__element(
         self, commenter_url_element: WebElement
@@ -69,7 +69,7 @@ class Comment(object):
         )
 
     def parse_comment_from_comment__element(self, comment_element: WebElement) -> str:
-        return comment_element.get_attribute("innerHTML")
+        return comment_element.get_attribute("innerHTML")# .encode('utf-8')
 
     def parse_comment_details(
         self,
@@ -152,7 +152,7 @@ class Tweet(object):
     def parse_text_from_text__element(self, text_element: WebElement) -> str:
         return text_element.get_attribute(
             "innerHTML"
-        )  # print(re.sub('<[^<]+?>', '', tweets.get_attribute("innerHTML")))
+        )  # print(re.sub('<[^<]+?>', '', tweets.get_attribute("innerHTML")# .encode('utf-8')))
 
     def parse_time_from_time__n__url_element(
         self, time__n__url_element: WebElement
@@ -289,7 +289,7 @@ for tweet in tweets:
 
 driver.quit()
 
-with open("out.json", "w+") as output_file:
+with open("out.json", "w+", encoding='utf-8') as output_file:
     json.dump(
-        [tweet.to_dict() for tweet in tweets], output_file, ensure_ascii=True, indent=4
+        [tweet.to_dict() for tweet in tweets], output_file, ensure_ascii=False, indent=4
     )
