@@ -32,9 +32,6 @@ base_url = "https://twitter.com/"
 driver = webdriver.Chrome()
 driver.get(base_url + "bbcbangla")
 sleep(3)
-count = 0
-
-__PAGE = "//div[@class='css-1dbjc4n r-1igl3o0 r-qklmqi r-1adg3ll r-1ny4l3l']"
 
 
 class Comment(object):
@@ -230,6 +227,64 @@ class Tweet(object):
         ]
         return texts, times_n_urls, options_replies_retweets_likes_shares
 
+    @staticmethod
+    def fetch_tweets_till_tweenty() -> List[Tweet]:
+        tweets = []
+        count = 0
+        __PAGE = "//div[@class='css-1dbjc4n r-1igl3o0 r-qklmqi r-1adg3ll r-1ny4l3l']"
+
+        while True:
+            if count >= 20:  # at least 20
+                break
+            sleep(2)
+            tweets_in_page = driver.find_elements(By.XPATH, __PAGE)
+            for scope in tweets_in_page:
+                (
+                    texts,
+                    times_n_urls,
+                    options_replies_retweets_likes_shares,
+                ) = Tweet.fetch_tweets_in_page(scope)
+
+                for text, time_n_url, option_reply_retweet_like_share in zip(
+                    texts, times_n_urls, options_replies_retweets_likes_shares
+                ):
+                    tweet_instance = Tweet().parse_from_elements(
+                        [text, time_n_url, option_reply_retweet_like_share]
+                    )
+                    tweets.append(tweet_instance)
+
+                    count += 1
+                    if count >= 20:  # at least 20
+                        break
+
+                break
+
+            break
+            driver.execute_script("window.scrollTo(0, document.body.scrollHeight)")
+
+        return tweets
+
+    @staticmethod
+    def fetch() -> List[Tweet]:
+        tweets = Tweet.fetch_tweets_till_tweenty()
+
+        for tweet in tweets:
+            tweet.get_comments()
+
+        return tweets
+
+    @staticmethod
+    def fetch_and_save() -> None:
+        tweets = Tweet.fetch()
+
+        with open("out.json", "w+", encoding="utf-8") as output_file:
+            json.dump(
+                [tweet.to_dict() for tweet in tweets],
+                output_file,
+                ensure_ascii=False,
+                indent=4,
+            )
+
     def to_dict(self) -> Dict:
         return {
             "post_text": self.post_text,
@@ -260,44 +315,7 @@ class Tweet(object):
         return self
 
 
-tweets = []
-
-while True:
-    if count >= 20:  # at least 20
-        break
-    sleep(2)
-    tweets_in_page = driver.find_elements(By.XPATH, __PAGE)
-    for scope in tweets_in_page:
-        (
-            texts,
-            times_n_urls,
-            options_replies_retweets_likes_shares,
-        ) = Tweet.fetch_tweets_in_page(scope)
-
-        for text, time_n_url, option_reply_retweet_like_share in zip(
-            texts, times_n_urls, options_replies_retweets_likes_shares
-        ):
-            tweet_instance = Tweet().parse_from_elements(
-                [text, time_n_url, option_reply_retweet_like_share]
-            )
-            tweets.append(tweet_instance)
-
-            count += 1
-            if count >= 20:  # at least 20
-                break
-
-        break
-    break
-    driver.execute_script("window.scrollTo(0, document.body.scrollHeight)")
-
-
-for tweet in tweets:
-    tweet.get_comments()
+Tweet.fetch_and_save()
 
 
 driver.quit()
-
-with open("out.json", "w+", encoding="utf-8") as output_file:
-    json.dump(
-        [tweet.to_dict() for tweet in tweets], output_file, ensure_ascii=False, indent=4
-    )
