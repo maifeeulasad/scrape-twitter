@@ -11,20 +11,20 @@ from typing import List, Dict
 
 """
 Fields to Scrape: 
- [ ]Posts, 
+ [x] Posts, 
  [x] Post URL, 
  [x] Post Time, 
  [x] Post Te[x]t, 
  [x] No. of Comments, 
  [x] No. of Retweets, 
  [x] No. of Likes, 
- [x]Commenter Name, 
- [x]Commenter profile URL, 
- [x]Comment time, 
- [x]Comment, 
- [ ]Who Retweets, 
- [ ]Retweet Te[x]t, 
- [ ]Retweeter URL
+ [x] Commenter Name, 
+ [x] Commenter profile URL, 
+ [x] Comment time, 
+ [x] Comment, 
+ [ ] Who Retweets, 
+ [ ] Retweet Te[x]t, 
+ [ ] Retweeter URL
 """
 
 base_url = "https://twitter.com/"
@@ -206,7 +206,6 @@ class Tweet(object):
             retweet_element
         )
         self.count_like = self.parse_count__like_from_like__element(like_element)
-        self.get_comments()
         return self
 
     def to_dict(self) -> Dict:
@@ -217,7 +216,7 @@ class Tweet(object):
             "count_reply": self.count_reply,
             "count_retweet": self.count_retweet,
             "count_like": self.count_like,
-            "comments": [x.__str__() for x in self.comments],
+            "comments": [x.to_dict() for x in self.comments],
         }
 
     def __str__(self) -> str:
@@ -229,9 +228,6 @@ class Tweet(object):
     def __repr__(self) -> str:
         return self.__str__()
 
-    def _return_to_old_path(self) -> None:
-        driver.back()
-
     def _open_tweet_page(self) -> None:
         driver.get(self.post_url)
 
@@ -239,7 +235,6 @@ class Tweet(object):
         self._open_tweet_page()
         sleep(2)
         self.comments = Comment().parse_all_comments()
-        self._return_to_old_path()
         return self
 
 
@@ -276,8 +271,6 @@ while True:
                 [text, time_n_url, option_reply_retweet_like_share]
             )
             tweets.append(tweet_instance)
-            # print(tweet_instance)
-            break
 
             count += 1
             if count >= 20:  # at least 20
@@ -290,7 +283,13 @@ while True:
     driver.execute_script("window.scrollTo(0, document.body.scrollHeight)")
 
 
-with open("out.json", "w+") as output_file:
-    output_file.write("[" + "\n\n,\n\n".join([tweet.__str__() for tweet in tweets]) + "]")
+for tweet in tweets:
+    tweet.get_comments()
+
 
 driver.quit()
+
+with open("out.json", "w+") as output_file:
+    json.dump(
+        [tweet.to_dict() for tweet in tweets], output_file, ensure_ascii=True, indent=4
+    )
