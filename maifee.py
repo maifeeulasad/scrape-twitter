@@ -202,21 +202,36 @@ class Tweet(object):
         )
 
     def parse_count__reply_from_reply__element(self, reply_element: WebElement) -> int:
-        return reply_element.find_elements(By.TAG_NAME, "span")[2].get_attribute(
-            "innerHTML"
-        )
+        try:
+            return int(
+                reply_element.find_elements(By.TAG_NAME, "span")[2].get_attribute(
+                    "innerHTML"
+                )
+            )
+        except:
+            return -1
 
     def parse_count__retweet_from_retweet__element(
         self, retweet_element: WebElement
     ) -> int:
-        return retweet_element.find_elements(By.TAG_NAME, "span")[2].get_attribute(
-            "innerHTML"
-        )
+        try:
+            return int(
+                retweet_element.find_elements(By.TAG_NAME, "span")[2].get_attribute(
+                    "innerHTML"
+                )
+            )
+        except:
+            return -1
 
     def parse_count__like_from_like__element(self, like_element: WebElement) -> int:
-        return like_element.find_elements(By.TAG_NAME, "span")[2].get_attribute(
-            "innerHTML"
-        )
+        try:
+            return int(
+                like_element.find_elements(By.TAG_NAME, "span")[2].get_attribute(
+                    "innerHTML"
+                )
+            )
+        except:
+            return -1
 
     def parse_url_from_time__n__url_element(
         self, time__n__url_element: WebElement
@@ -241,6 +256,10 @@ class Tweet(object):
             option_reply_retweet_like_share[3],
         )
 
+        # print(reply_element.get_attribute("innerHTML"))
+        # print(retweet_element.get_attribute("innerHTML"))
+        # print(like_element.get_attribute("innerHTML"))
+
         self.count_reply = self.parse_count__reply_from_reply__element(reply_element)
         self.count_retweet = self.parse_count__retweet_from_retweet__element(
             retweet_element
@@ -249,7 +268,9 @@ class Tweet(object):
         return self
 
     @staticmethod
-    def fetch_tweets_in_page(page_scope: WebElement):
+    def fetch_tweets_in_page(
+        page_scope: WebElement,
+    ) -> Tuple[list[WebElement], list[WebElement], list[list[WebElement]]]:
         __TEXTS = "//div[@class='css-901oao r-1nao33i r-37j5jr r-a023e6 r-16dba41 r-rjixqe r-bcqeeo r-bnwqim r-qvutc0']"
         __TIMES_N_URLS = "//div[@class='css-1dbjc4n r-18u37iz r-1q142lx']"
         __OPTIONS_REPLIES_RETWEETS_LIKES_SHARES = "//div[@class='css-901oao r-1awozwy r-1bwzh9t r-6koalj r-37j5jr r-a023e6 r-16dba41 r-1h0z5md r-rjixqe r-bcqeeo r-o7ynqc r-clp7b1 r-3s2u2q r-qvutc0']"
@@ -280,11 +301,15 @@ class Tweet(object):
         __PAGE = "//div[@class='css-1dbjc4n r-1igl3o0 r-qklmqi r-1adg3ll r-1ny4l3l']"
 
         while True:
+            
             if count >= 20:  # at least 20
                 break
             sleep(2)
             tweets_in_page = driver.find_elements(By.XPATH, __PAGE)
             for scope in tweets_in_page:
+                
+                if count >= 20:  # at least 20
+                    break
                 (
                     texts,
                     times_n_urls,
@@ -294,18 +319,17 @@ class Tweet(object):
                 for text, time_n_url, option_reply_retweet_like_share in zip(
                     texts, times_n_urls, options_replies_retweets_likes_shares
                 ):
+                    
                     tweet_instance = Tweet().parse_from_elements(
                         [text, time_n_url, option_reply_retweet_like_share]
                     )
-                    tweets.append(tweet_instance)
+                    if tweet_instance.post_url not in [x.post_url for x in tweets]:
+                        tweets.append(tweet_instance)
 
-                    count += 1
-                    if count >= 20:  # at least 20
-                        break
-
-                break
-
-            break
+                        print("tweet serial #" + str(count))
+                        count += 1
+                        if count >= 20:  # at least 20
+                            break
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight)")
 
         return tweets
