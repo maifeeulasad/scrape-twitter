@@ -35,9 +35,6 @@ sleep(3)
 count = 0
 
 __PAGE = "//div[@class='css-1dbjc4n r-1igl3o0 r-qklmqi r-1adg3ll r-1ny4l3l']"
-__TEXTS = "//div[@class='css-901oao r-1nao33i r-37j5jr r-a023e6 r-16dba41 r-rjixqe r-bcqeeo r-bnwqim r-qvutc0']"
-__TIMES_N_URLS = "//div[@class='css-1dbjc4n r-18u37iz r-1q142lx']"
-__OPTIONS_REPLIES_RETWEETS_LIKES_SHARES = "//div[@class='css-901oao r-1awozwy r-1bwzh9t r-6koalj r-37j5jr r-a023e6 r-16dba41 r-1h0z5md r-rjixqe r-bcqeeo r-o7ynqc r-clp7b1 r-3s2u2q r-qvutc0']"
 
 
 class Comment(object):
@@ -54,7 +51,7 @@ class Comment(object):
     def parse_commenter__name_from_comment__element(
         self, commenter_name_element: WebElement
     ) -> str:
-        return commenter_name_element.get_attribute("innerHTML")# .encode('utf-8')
+        return commenter_name_element.get_attribute("innerHTML")  # .encode('utf-8')
 
     def parse_commenter__url_from_comment__element(
         self, commenter_url_element: WebElement
@@ -69,7 +66,7 @@ class Comment(object):
         )
 
     def parse_comment_from_comment__element(self, comment_element: WebElement) -> str:
-        return comment_element.get_attribute("innerHTML")# .encode('utf-8')
+        return comment_element.get_attribute("innerHTML")  # .encode('utf-8')
 
     def parse_comment_details(
         self,
@@ -208,6 +205,31 @@ class Tweet(object):
         self.count_like = self.parse_count__like_from_like__element(like_element)
         return self
 
+    @staticmethod
+    def fetch_tweets_in_page(page_scope: WebElement):
+        __TEXTS = "//div[@class='css-901oao r-1nao33i r-37j5jr r-a023e6 r-16dba41 r-rjixqe r-bcqeeo r-bnwqim r-qvutc0']"
+        __TIMES_N_URLS = "//div[@class='css-1dbjc4n r-18u37iz r-1q142lx']"
+        __OPTIONS_REPLIES_RETWEETS_LIKES_SHARES = "//div[@class='css-901oao r-1awozwy r-1bwzh9t r-6koalj r-37j5jr r-a023e6 r-16dba41 r-1h0z5md r-rjixqe r-bcqeeo r-o7ynqc r-clp7b1 r-3s2u2q r-qvutc0']"
+
+        texts = page_scope.find_elements(
+            By.XPATH,
+            __TEXTS,
+        )
+        times_n_urls = page_scope.find_elements(By.XPATH, __TIMES_N_URLS)
+        options_replies_retweets_likes_shares = page_scope.find_elements(
+            By.XPATH, __OPTIONS_REPLIES_RETWEETS_LIKES_SHARES
+        )
+        magic_number_count = 5
+        options_replies_retweets_likes_shares = [
+            options_replies_retweets_likes_shares[
+                magic_number_count * x : magic_number_count * x + magic_number_count
+            ]
+            for x in range(
+                0, int(len(options_replies_retweets_likes_shares) / magic_number_count)
+            )
+        ]
+        return texts, times_n_urls, options_replies_retweets_likes_shares
+
     def to_dict(self) -> Dict:
         return {
             "post_text": self.post_text,
@@ -246,23 +268,11 @@ while True:
     sleep(2)
     tweets_in_page = driver.find_elements(By.XPATH, __PAGE)
     for scope in tweets_in_page:
-        texts = scope.find_elements(
-            By.XPATH,
-            __TEXTS,
-        )
-        times_n_urls = scope.find_elements(By.XPATH, __TIMES_N_URLS)
-        options_replies_retweets_likes_shares = scope.find_elements(
-            By.XPATH, __OPTIONS_REPLIES_RETWEETS_LIKES_SHARES
-        )
-        magic_number_count = 5
-        options_replies_retweets_likes_shares = [
-            options_replies_retweets_likes_shares[
-                magic_number_count * x : magic_number_count * x + magic_number_count
-            ]
-            for x in range(
-                0, int(len(options_replies_retweets_likes_shares) / magic_number_count)
-            )
-        ]
+        (
+            texts,
+            times_n_urls,
+            options_replies_retweets_likes_shares,
+        ) = Tweet.fetch_tweets_in_page(scope)
 
         for text, time_n_url, option_reply_retweet_like_share in zip(
             texts, times_n_urls, options_replies_retweets_likes_shares
@@ -276,10 +286,8 @@ while True:
             if count >= 20:  # at least 20
                 break
 
-        print("------------")
         break
     break
-    count += 1
     driver.execute_script("window.scrollTo(0, document.body.scrollHeight)")
 
 
@@ -289,7 +297,7 @@ for tweet in tweets:
 
 driver.quit()
 
-with open("out.json", "w+", encoding='utf-8') as output_file:
+with open("out.json", "w+", encoding="utf-8") as output_file:
     json.dump(
         [tweet.to_dict() for tweet in tweets], output_file, ensure_ascii=False, indent=4
     )
