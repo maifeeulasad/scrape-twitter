@@ -239,26 +239,18 @@ class Tweet(object):
         return time__n__url_element.find_element(By.TAG_NAME, "a").get_attribute("href")
 
     def parse_from_elements(self, tweet_elements: List[WebElement]) -> Tweet:
-        text_element, time_n_url, option_reply_retweet_like_share = (
+        text_element, time_n_url, reply_element, retweet_element, like_element = (
             tweet_elements[0],
             tweet_elements[1],
             tweet_elements[2],
+            tweet_elements[3],
+            tweet_elements[4],
         )
         self.post_text = self.parse_text_from_text__element(text_element)
 
         self.post_time = self.parse_time_from_time__n__url_element(time_n_url)
 
         self.post_url = self.parse_url_from_time__n__url_element(time_n_url)
-
-        reply_element, retweet_element, like_element = (
-            option_reply_retweet_like_share[1],
-            option_reply_retweet_like_share[2],
-            option_reply_retweet_like_share[3],
-        )
-
-        # print(reply_element.get_attribute("innerHTML"))
-        # print(retweet_element.get_attribute("innerHTML"))
-        # print(like_element.get_attribute("innerHTML"))
 
         self.count_reply = self.parse_count__reply_from_reply__element(reply_element)
         self.count_retweet = self.parse_count__retweet_from_retweet__element(
@@ -270,29 +262,29 @@ class Tweet(object):
     @staticmethod
     def fetch_tweets_in_page(
         page_scope: WebElement,
-    ) -> Tuple[list[WebElement], list[WebElement], list[list[WebElement]]]:
+    ) -> Tuple[
+        List[WebElement],
+        List[WebElement],
+        List[WebElement],
+        List[WebElement],
+        List[WebElement],
+    ]:
         __TEXTS = "//div[@class='css-901oao r-1nao33i r-37j5jr r-a023e6 r-16dba41 r-rjixqe r-bcqeeo r-bnwqim r-qvutc0']"
         __TIMES_N_URLS = "//div[@class='css-1dbjc4n r-18u37iz r-1q142lx']"
-        __OPTIONS_REPLIES_RETWEETS_LIKES_SHARES = "//div[@class='css-901oao r-1awozwy r-1bwzh9t r-6koalj r-37j5jr r-a023e6 r-16dba41 r-1h0z5md r-rjixqe r-bcqeeo r-o7ynqc r-clp7b1 r-3s2u2q r-qvutc0']"
+        __REPLY = "//div[@data-testid='reply']"
+        __RETWEET = "//div[@data-testid='retweet']"
+        __LIKE = "//div[@data-testid='like']"
 
         texts = page_scope.find_elements(
             By.XPATH,
             __TEXTS,
         )
         times_n_urls = page_scope.find_elements(By.XPATH, __TIMES_N_URLS)
-        options_replies_retweets_likes_shares = page_scope.find_elements(
-            By.XPATH, __OPTIONS_REPLIES_RETWEETS_LIKES_SHARES
-        )
-        magic_number_count = 5
-        options_replies_retweets_likes_shares = [
-            options_replies_retweets_likes_shares[
-                magic_number_count * x : magic_number_count * x + magic_number_count
-            ]
-            for x in range(
-                0, int(len(options_replies_retweets_likes_shares) / magic_number_count)
-            )
-        ]
-        return texts, times_n_urls, options_replies_retweets_likes_shares
+        replies = page_scope.find_elements(By.XPATH, __REPLY)
+        retweets = page_scope.find_elements(By.XPATH, __RETWEET)
+        likes = page_scope.find_elements(By.XPATH, __LIKE)
+
+        return texts, times_n_urls, replies, retweets, likes
 
     @staticmethod
     def fetch_tweets_till_tweenty() -> List[Tweet]:
@@ -301,32 +293,34 @@ class Tweet(object):
         __PAGE = "//div[@class='css-1dbjc4n r-1igl3o0 r-qklmqi r-1adg3ll r-1ny4l3l']"
 
         while True:
-            
+
             if count >= 20:  # at least 20
                 break
             sleep(2)
             tweets_in_page = driver.find_elements(By.XPATH, __PAGE)
             for scope in tweets_in_page:
-                
+
                 if count >= 20:  # at least 20
                     break
                 (
                     texts,
                     times_n_urls,
-                    options_replies_retweets_likes_shares,
+                    replies,
+                    retweets,
+                    likes,
                 ) = Tweet.fetch_tweets_in_page(scope)
 
-                for text, time_n_url, option_reply_retweet_like_share in zip(
-                    texts, times_n_urls, options_replies_retweets_likes_shares
+                for text, time_n_url, reply, retweet, like in zip(
+                    texts, times_n_urls, replies, retweets, likes
                 ):
-                    
+
                     tweet_instance = Tweet().parse_from_elements(
-                        [text, time_n_url, option_reply_retweet_like_share]
+                        [text, time_n_url, reply, retweet, like]
                     )
                     if tweet_instance.post_url not in [x.post_url for x in tweets]:
                         tweets.append(tweet_instance)
 
-                        print("tweet serial #" + str(count))
+                        print("tweet serial #" + str(count + 1))
                         count += 1
                         if count >= 20:  # at least 20
                             break

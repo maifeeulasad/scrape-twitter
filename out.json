@@ -4,8 +4,8 @@
         "post_time": "2022-11-18T07:29:24.000Z",
         "post_url": "https://twitter.com/bbcbangla/status/1593506642729259008",
         "count_reply": -1,
-        "count_retweet": 1,
-        "count_like": 1,
+        "count_retweet": -1,
+        "count_like": 22,
         "comments": []
     },
     {
@@ -13,8 +13,8 @@
         "post_time": "2022-11-18T07:28:46.000Z",
         "post_url": "https://twitter.com/bbcbangla/status/1593506485526749184",
         "count_reply": -1,
-        "count_retweet": -1,
-        "count_like": -1,
+        "count_retweet": 1,
+        "count_like": 12,
         "comments": []
     },
     {
@@ -23,7 +23,7 @@
         "post_url": "https://twitter.com/bbcbangla/status/1593186564603252736",
         "count_reply": 15,
         "count_retweet": 6,
-        "count_like": 255,
+        "count_like": 267,
         "comments": [
             {
                 "commenter_name": "SHAHRIARE HOSSAIN ARAFAT",
@@ -93,7 +93,7 @@
         "post_url": "https://twitter.com/bbcbangla/status/1593130820642164738",
         "count_reply": 8,
         "count_retweet": 14,
-        "count_like": 327,
+        "count_like": 328,
         "comments": [
             {
                 "commenter_name": "Fahim Hossain",
@@ -185,7 +185,7 @@
         "post_url": "https://twitter.com/bbcbangla/status/1589612591625932801",
         "count_reply": 7,
         "count_retweet": 9,
-        "count_like": 349,
+        "count_like": 350,
         "comments": [
             {
                 "commenter_name": "Mahmudul Huq Khan",
@@ -306,7 +306,7 @@
         "post_url": "https://twitter.com/bbcbangla/status/1589293456299806720",
         "count_reply": 12,
         "count_retweet": 14,
-        "count_like": 331,
+        "count_like": 330,
         "comments": [
             {
                 "commenter_name": "Tree",
@@ -431,6 +431,48 @@
                 "commenter_url": "https://twitter.com/shakibnsd",
                 "comment_time": "2022-11-06T15:43:16.000Z",
                 "comment": "🤣😂🤣🤣😂"
+            },
+            {
+                "commenter_name": "Imran Khan",
+                "commenter_url": "https://twitter.com/Md_imran95",
+                "comment_time": "2022-11-06T21:01:12.000Z",
+                "comment": "এরা কি আসলে এই যুগের মানুষ?"
+            },
+            {
+                "commenter_name": "Farukh Ahmed",
+                "commenter_url": "https://twitter.com/FarukhA55898918",
+                "comment_time": "2022-11-06T23:53:01.000Z",
+                "comment": ""
+            },
+            {
+                "commenter_name": "RH Rakib Hasan",
+                "commenter_url": "https://twitter.com/RHRakib433",
+                "comment_time": "2022-11-07T01:27:17.000Z",
+                "comment": "একটু জ্ঞান অর্জন করলে আজ এমন খেলা খেলত না"
+            },
+            {
+                "commenter_name": "Mohammad Ali",
+                "commenter_url": "https://twitter.com/Mohamma93209640",
+                "comment_time": "2022-11-07T01:56:21.000Z",
+                "comment": "আহারে শ্রেষ্ঠ জাতি মানুষ পশুর পায়খানা দিয়ে এইসব কি করে!"
+            },
+            {
+                "commenter_name": "SUHAS",
+                "commenter_url": "https://twitter.com/suhasgomes",
+                "comment_time": "2022-11-07T03:37:11.000Z",
+                "comment": "all are mad"
+            },
+            {
+                "commenter_name": "হটাৎ দেখা",
+                "commenter_url": "https://twitter.com/s_reaj",
+                "comment_time": "2022-11-07T05:07:49.000Z",
+                "comment": "আমি পাগল হয়ে যাবো"
+            },
+            {
+                "commenter_name": "Mahbub Hasan11",
+                "commenter_url": "https://twitter.com/MahbubH93798061",
+                "comment_time": "2022-11-07T05:57:27.000Z",
+                "comment": "Wtf🤦"
             }
         ]
     },
