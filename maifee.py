@@ -123,7 +123,8 @@ class Comment(object):
             times_and_urls,
             parse_comment_elements,
         ):
-            comment = self.parse_comment_details(
+            
+            comment = Comment().parse_comment_details(
                 username_element,
                 userprofile_element,
                 time_n_url_element,
@@ -288,7 +289,8 @@ class Tweet(object):
         tweets = Tweet.fetch_tweets_till_tweenty()
 
         for tweet in tweets:
-            tweet.get_comments()
+            comments = tweet.get_comments()
+            tweet.comments = comments
 
         return tweets
 
@@ -327,11 +329,11 @@ class Tweet(object):
     def _open_tweet_page(self) -> None:
         driver.get(self.post_url)
 
-    def get_comments(self) -> Tweet:
+    def get_comments(self) -> List[Comment]:
         self._open_tweet_page()
         sleep(2)
-        self.comments = Comment().parse_all_comments()
-        return self
+        comments = Comment().parse_all_comments()
+        return comments
 
 
 Tweet.fetch_and_save()
