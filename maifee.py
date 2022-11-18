@@ -39,7 +39,7 @@ class ContentUtil(object):
 
     @staticmethod
     def strip_image(str_in) -> str:
-        return re.sub('<img alt=\\"*(.)\\"[^>]*>', "$1", str_in)
+        return re.sub('<img alt=\\"*(.)\\"[^>]*>', '\g<1>', str_in)
 
     @staticmethod
     def strip_html(str_in) -> str:
