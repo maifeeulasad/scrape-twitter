@@ -5,8 +5,7 @@ from selenium import webdriver
 from time import sleep
 import json
 from typing import List, Dict
-
-# import re
+import re
 
 
 """
@@ -34,6 +33,22 @@ driver.get(base_url + "bbcbangla")
 sleep(3)
 
 
+class ContentUtil(object):
+    def __init__(self) -> None:
+        pass
+
+    @staticmethod
+    def strip_image(str_in) -> str:
+        return re.sub('<img alt=\\"*(.)\\"[^>]*>', "$1", str_in)
+
+    @staticmethod
+    def strip_html(str_in) -> str:
+        return re.sub("<[^<]+?>", "", str_in)
+
+    def strip_all(str_in) -> str:
+        return ContentUtil.strip_html(ContentUtil.strip_image(str_in))
+
+
 class Comment(object):
     def __init__(self) -> None:
         self.commenter_name = ""
@@ -44,11 +59,13 @@ class Comment(object):
         self.__USER_PROFILE = "//a[@class='css-4rbku5 css-18t94o4 css-1dbjc4n r-1loqt21 r-1wbh5a2 r-dnmrzs r-1ny4l3l']"
         self.__TIME_AND_URL = "//div[@class='css-1dbjc4n r-18u37iz r-1q142lx']"
         self.__COMMENT = "//div[@class='css-901oao r-1nao33i r-37j5jr r-a023e6 r-16dba41 r-rjixqe r-bcqeeo r-bnwqim r-qvutc0']"
+        self.__RETWEET = "//a[@class='css-4rbku5 css-18t94o4 css-901oao r-1nao33i r-1loqt21 r-37j5jr r-a023e6 r-16dba41 r-rjixqe r-bcqeeo r-qvutc0']"
 
     def parse_commenter__name_from_comment__element(
         self, commenter_name_element: WebElement
     ) -> str:
-        return commenter_name_element.get_attribute("innerHTML")  # .encode('utf-8')
+        name = commenter_name_element.get_attribute("innerHTML")  # .encode('utf-8')
+        return ContentUtil.strip_all(name)
 
     def parse_commenter__url_from_comment__element(
         self, commenter_url_element: WebElement
@@ -63,7 +80,8 @@ class Comment(object):
         )
 
     def parse_comment_from_comment__element(self, comment_element: WebElement) -> str:
-        return comment_element.get_attribute("innerHTML")  # .encode('utf-8')
+        comment = comment_element.get_attribute("innerHTML")  # .encode('utf-8')
+        return ContentUtil.strip_all(comment)
 
     def parse_comment_details(
         self,
@@ -144,9 +162,10 @@ class Tweet(object):
         self.comments = []
 
     def parse_text_from_text__element(self, text_element: WebElement) -> str:
-        return text_element.get_attribute(
+        text = text_element.get_attribute(
             "innerHTML"
-        )  # print(re.sub('<[^<]+?>', '', tweets.get_attribute("innerHTML")# .encode('utf-8')))
+        )  # print( tweets.get_attribute("innerHTML")# .encode('utf-8')))
+        return ContentUtil.strip_all(text)
 
     def parse_time_from_time__n__url_element(
         self, time__n__url_element: WebElement
