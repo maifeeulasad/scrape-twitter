@@ -4,7 +4,7 @@ from selenium.webdriver.remote.webelement import WebElement
 from selenium import webdriver
 from time import sleep
 import json
-from typing import List, Dict
+from typing import List, Dict, Tuple
 import re
 
 
@@ -21,9 +21,9 @@ Fields to Scrape:
  [x] Commenter profile URL, 
  [x] Comment time, 
  [x] Comment, 
- [ ] Who Retweets, 
+ [.] Who Retweets, 
  [ ] Retweet Te[x]t, 
- [ ] Retweeter URL
+ [.] Retweeter URL
 """
 
 base_url = "https://twitter.com/"
@@ -39,7 +39,7 @@ class ContentUtil(object):
 
     @staticmethod
     def strip_image(str_in) -> str:
-        return re.sub('<img alt=\\"*(.)\\"[^>]*>', '\g<1>', str_in)
+        return re.sub('<img alt=\\"*(.)\\"[^>]*>', "\g<1>", str_in)
 
     @staticmethod
     def strip_html(str_in) -> str:
@@ -47,6 +47,35 @@ class ContentUtil(object):
 
     def strip_all(str_in) -> str:
         return ContentUtil.strip_html(ContentUtil.strip_image(str_in))
+
+
+class ReTweet(object):
+    def __init__(self) -> None:
+        self.retweeter = ""
+        self.retweeter_url = ""
+        self.__RETWEET = "//a[@class='css-4rbku5 css-18t94o4 css-901oao r-1nao33i r-1loqt21 r-37j5jr r-a023e6 r-16dba41 r-rjixqe r-bcqeeo r-qvutc0']"
+
+    def parse_all_retweet(self) -> List[ReTweet]:
+        # retweet_link = driver.find_element(By.XPATH, self.__RETWEET)
+        # retweet_link.click()
+        # # todo: i can't get past login
+        # sleep(4)
+        return []
+
+    def to_dict(self) -> Dict:
+        return {
+            "retweeter": self.retweeter,
+            "retweeter_url": self.retweeter_url,
+        }
+
+    def __str__(self) -> str:
+        return json.dumps(
+            self.to_dict(),
+            indent=4,
+        )
+
+    def __repr__(self) -> str:
+        return self.__str__()
 
 
 class Comment(object):
@@ -59,12 +88,11 @@ class Comment(object):
         self.__USER_PROFILE = "//a[@class='css-4rbku5 css-18t94o4 css-1dbjc4n r-1loqt21 r-1wbh5a2 r-dnmrzs r-1ny4l3l']"
         self.__TIME_AND_URL = "//div[@class='css-1dbjc4n r-18u37iz r-1q142lx']"
         self.__COMMENT = "//div[@class='css-901oao r-1nao33i r-37j5jr r-a023e6 r-16dba41 r-rjixqe r-bcqeeo r-bnwqim r-qvutc0']"
-        self.__RETWEET = "//a[@class='css-4rbku5 css-18t94o4 css-901oao r-1nao33i r-1loqt21 r-37j5jr r-a023e6 r-16dba41 r-rjixqe r-bcqeeo r-qvutc0']"
 
     def parse_commenter__name_from_comment__element(
         self, commenter_name_element: WebElement
     ) -> str:
-        name = commenter_name_element.get_attribute("innerHTML")  # .encode('utf-8')
+        name = commenter_name_element.get_attribute("innerHTML")
         return ContentUtil.strip_all(name)
 
     def parse_commenter__url_from_comment__element(
@@ -80,7 +108,7 @@ class Comment(object):
         )
 
     def parse_comment_from_comment__element(self, comment_element: WebElement) -> str:
-        comment = comment_element.get_attribute("innerHTML")  # .encode('utf-8')
+        comment = comment_element.get_attribute("innerHTML")
         return ContentUtil.strip_all(comment)
 
     def parse_comment_details(
@@ -123,7 +151,7 @@ class Comment(object):
             times_and_urls,
             parse_comment_elements,
         ):
-            
+
             comment = Comment().parse_comment_details(
                 username_element,
                 userprofile_element,
@@ -163,9 +191,7 @@ class Tweet(object):
         self.comments = []
 
     def parse_text_from_text__element(self, text_element: WebElement) -> str:
-        text = text_element.get_attribute(
-            "innerHTML"
-        )  # print( tweets.get_attribute("innerHTML")# .encode('utf-8')))
+        text = text_element.get_attribute("innerHTML")
         return ContentUtil.strip_all(text)
 
     def parse_time_from_time__n__url_element(
@@ -289,7 +315,7 @@ class Tweet(object):
         tweets = Tweet.fetch_tweets_till_tweenty()
 
         for tweet in tweets:
-            comments = tweet.get_comments()
+            comments, retweets = tweet.get_comments_and_retweets()
             tweet.comments = comments
 
         return tweets
@@ -329,11 +355,12 @@ class Tweet(object):
     def _open_tweet_page(self) -> None:
         driver.get(self.post_url)
 
-    def get_comments(self) -> List[Comment]:
+    def get_comments_and_retweets(self) -> Tuple[List[Comment], List[ReTweet]]:
         self._open_tweet_page()
         sleep(2)
         comments = Comment().parse_all_comments()
-        return comments
+        retweets = ReTweet().parse_all_retweet()
+        return comments, retweets
 
 
 Tweet.fetch_and_save()

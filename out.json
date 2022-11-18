@@ -5,7 +5,7 @@
         "post_url": "https://twitter.com/bbcbangla/status/1593186564603252736",
         "count_reply": "14",
         "count_retweet": "6",
-        "count_like": "241",
+        "count_like": "247",
         "comments": [
             {
                 "commenter_name": "SHAHRIARE HOSSAIN ARAFAT",
@@ -67,9 +67,9 @@
         "post_text": "কোচ তিতের অধীনে ব্রাজিল গত ২৯ ম্যাচে হারেনি, শেষ ১৭ ম্যাচের ১৩টিতে কোন গোলও হজম করেনি। একই সাথে এই ২৯ ম্যাচে ব্রাজিল গড়ে আড়াইটি করে গোল দিয়েছে প্রতিপক্ষের জালে।",
         "post_time": "2022-11-17T06:36:01.000Z",
         "post_url": "https://twitter.com/bbcbangla/status/1593130820642164738",
-        "count_reply": "7",
+        "count_reply": "8",
         "count_retweet": "14",
-        "count_like": "317",
+        "count_like": "326",
         "comments": [
             {
                 "commenter_name": "Fahim Hossain",
@@ -100,6 +100,12 @@
                 "commenter_url": "https://twitter.com/sihabxbogura07",
                 "comment_time": "2022-11-18T05:42:38.000Z",
                 "comment": "khela hobe khelar mathe🫠"
+            },
+            {
+                "commenter_name": "Johirul Islam",
+                "commenter_url": "https://twitter.com/Johirulislam137",
+                "comment_time": "2022-11-18T06:17:03.000Z",
+                "comment": "interest"
             }
         ]
     },
@@ -171,8 +177,21 @@
         "post_url": "https://twitter.com/bbcbangla/status/1592457381585293314",
         "count_reply": "5",
         "count_retweet": "17",
-        "count_like": "325",
-        "comments": []
+        "count_like": "326",
+        "comments": [
+            {
+                "commenter_name": "Zahidul Mozammel",
+                "commenter_url": "https://twitter.com/ZahidulMozammel",
+                "comment_time": "2022-11-15T14:19:02.000Z",
+                "comment": "Very nice"
+            },
+            {
+                "commenter_name": "ziaur rahman",
+                "commenter_url": "https://twitter.com/dhumketuzia",
+                "comment_time": "2022-11-15T15:21:35.000Z",
+                "comment": "She is also an intelligent girl.\nBest wishes to Oishi."
+            }
+        ]
     },
     {
         "post_text": "কাতার বিশ্বকাপকে ঘিরে সেদেশে সমকামীদের বিরুদ্ধে বৈষম্যমূলক আচরণ নিয়ে বিতর্ক চলছে।",
@@ -181,6 +200,43 @@
         "count_reply": "8",
         "count_retweet": "1",
         "count_like": "126",
-        "comments": []
+        "comments": [
+            {
+                "commenter_name": "Umar Faruk",
+                "commenter_url": "https://twitter.com/UmarFaruk319",
+                "comment_time": "2022-11-15T12:19:02.000Z",
+                "comment": "🤣🤣🤣🤣"
+            },
+            {
+                "commenter_name": "JANNATUL FERDOUS NAYEEM",
+                "commenter_url": "https://twitter.com/NAYEEMISSION",
+                "comment_time": "2022-11-15T15:38:30.000Z",
+                "comment": "কাতার কোন জন্তু জানোয়ারের দেশ না। জন্তু জানোয়ার থাকে উন্নত বিশ্বেরর দেশ গুলো তে।"
+            },
+            {
+                "commenter_name": "nayaz",
+                "commenter_url": "https://twitter.com/nayaz99176068",
+                "comment_time": "2022-11-15T15:50:31.000Z",
+                "comment": "This is not unusual."
+            },
+            {
+                "commenter_name": "Zahidul Mozammel",
+                "commenter_url": "https://twitter.com/ZahidulMozammel",
+                "comment_time": "2022-11-15T16:31:43.000Z",
+                "comment": "সমকামিতা পশুর কাজ। কাজেই এদের জঙ্গলে পাঠিয়ে দেওয়া প্রয়োজন। অথবা মানবজাতি ধ্বংসের জন্য দায়ী হিসাবে পুড়িয়ে ফেলা প্রয়োজন।"
+            },
+            {
+                "commenter_name": "Nazmul Hossain",
+                "commenter_url": "https://twitter.com/NazmulH10075345",
+                "comment_time": "2022-11-15T19:16:44.000Z",
+                "comment": "কারন কাতার একটা থার্ডক্লাস কান্ট্রি।"
+            },
+            {
+                "commenter_name": "🙈🙉🙊",
+                "commenter_url": "https://twitter.com/neokuru",
+                "comment_time": "2022-11-16T11:27:03.000Z",
+                "comment": "এই নোংরা টপিকটাকে আপনার এত আদর করে স্পন্সর করেন কেন? মানুষকে ভালো কাজে উৎসাহিত করা আর খারাপ কাজকে বর্জন করা নিয়ে শিক্ষামূলক পোস্ট দিতে পারেননা? দুনিয়ায় যত নোংরামি আছে, সবই যদি আপনাদের চোখে ভালো হয়, তাহলে সুন্দর পৃথিবীর স্বপ্ন দেখবেন কিভাবে?"
+            }
+        ]
     }
 ]
