@@ -13,7 +13,7 @@ Fields to Scrape:
  [x] Posts, 
  [x] Post URL, 
  [x] Post Time, 
- [x] Post Te[x]t, 
+ [x] Post Text, 
  [x] No. of Comments, 
  [x] No. of Retweets, 
  [x] No. of Likes, 
@@ -22,8 +22,12 @@ Fields to Scrape:
  [x] Comment time, 
  [x] Comment, 
  [.] Who Retweets, 
- [ ] Retweet Te[x]t, 
- [.] Retweeter URL
+ [ ] Retweet Text, 
+ [.] Re-Tweeter URL
+"""
+
+"""
+Show additional replies, including those that may contain offensive content
 """
 
 base_url = "https://twitter.com/"
@@ -38,21 +42,22 @@ class ContentUtil(object):
         pass
 
     @staticmethod
-    def strip_image(str_in) -> str:
+    def strip_image(str_in: str) -> str:
         return re.sub('<img alt=\\"*(.)\\"[^>]*>', "\g<1>", str_in)
 
     @staticmethod
-    def strip_html(str_in) -> str:
+    def strip_html(str_in: str) -> str:
         return re.sub("<[^<]+?>", "", str_in)
 
-    def strip_all(str_in) -> str:
+    @staticmethod
+    def strip_all(str_in: str) -> str:
         return ContentUtil.strip_html(ContentUtil.strip_image(str_in))
 
 
 class ReTweet(object):
     def __init__(self) -> None:
-        self.retweeter = ""
-        self.retweeter_url = ""
+        self.retweeter: str = ""
+        self.retweeter_url: str = ""
         self.__RETWEET = "//a[@class='css-4rbku5 css-18t94o4 css-901oao r-1nao33i r-1loqt21 r-37j5jr r-a023e6 r-16dba41 r-rjixqe r-bcqeeo r-qvutc0']"
 
     def parse_all_retweet(self) -> List[ReTweet]:
@@ -80,10 +85,10 @@ class ReTweet(object):
 
 class Comment(object):
     def __init__(self) -> None:
-        self.commenter_name = ""
-        self.commenter_url = ""
-        self.comment_time = ""
-        self.comment = ""
+        self.commenter_name: str = ""
+        self.commenter_url: str = ""
+        self.comment_time: str = ""
+        self.comment: str = ""
         self.__USERNAME = "//span[@class='css-901oao css-16my406 css-1hf3ou5 r-poiln3 r-bcqeeo r-qvutc0']"
         self.__USER_PROFILE = "//a[@class='css-4rbku5 css-18t94o4 css-1dbjc4n r-1loqt21 r-1wbh5a2 r-dnmrzs r-1ny4l3l']"
         self.__TIME_AND_URL = "//div[@class='css-1dbjc4n r-18u37iz r-1q142lx']"
@@ -131,8 +136,6 @@ class Comment(object):
         return self
 
     def parse_all_comments(self) -> List[Comment]:
-        comments = []
-
         username_elements = driver.find_elements(By.XPATH, self.__USERNAME)[1:]
         userprofile_elements = driver.find_elements(By.XPATH, self.__USER_PROFILE)[2:][
             ::2
@@ -140,27 +143,20 @@ class Comment(object):
         times_and_urls = driver.find_elements(By.XPATH, self.__TIME_AND_URL)
         parse_comment_elements = driver.find_elements(By.XPATH, self.__COMMENT)
 
-        for (
-            username_element,
-            userprofile_element,
-            time_n_url_element,
-            parse_comment_element,
-        ) in zip(
-            username_elements,
-            userprofile_elements,
-            times_and_urls,
-            parse_comment_elements,
-        ):
-
-            comment = Comment().parse_comment_details(
+        return [
+            Comment().parse_comment_details(
                 username_element,
                 userprofile_element,
                 time_n_url_element,
                 parse_comment_element,
             )
-            comments.append(comment)
-
-        return comments
+            for username_element, userprofile_element, time_n_url_element, parse_comment_element in zip(
+                username_elements,
+                userprofile_elements,
+                times_and_urls,
+                parse_comment_elements,
+            )
+        ]
 
     def to_dict(self) -> Dict:
         return {
@@ -287,20 +283,20 @@ class Tweet(object):
         return texts, times_n_urls, replies, retweets, likes
 
     @staticmethod
-    def fetch_tweets_till_tweenty() -> List[Tweet]:
+    def fetch_tweets_by_count(max_count=20) -> List[Tweet]:
         tweets = []
         count = 0
         __PAGE = "//div[@class='css-1dbjc4n r-1igl3o0 r-qklmqi r-1adg3ll r-1ny4l3l']"
 
         while True:
 
-            if count >= 20:  # at least 20
+            if count >= max_count:  # at least 20
                 break
             sleep(2)
             tweets_in_page = driver.find_elements(By.XPATH, __PAGE)
             for scope in tweets_in_page:
 
-                if count >= 20:  # at least 20
+                if count >= max_count:  # at least 20
                     break
                 (
                     texts,
@@ -322,7 +318,7 @@ class Tweet(object):
 
                         print("tweet serial #" + str(count + 1))
                         count += 1
-                        if count >= 20:  # at least 20
+                        if count >= max_count:  # at least 20
                             break
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight)")
 
@@ -330,7 +326,7 @@ class Tweet(object):
 
     @staticmethod
     def fetch() -> List[Tweet]:
-        tweets = Tweet.fetch_tweets_till_tweenty()
+        tweets = Tweet.fetch_tweets_by_count()
 
         for tweet in tweets:
             comments, retweets = tweet.get_comments_and_retweets()
@@ -339,16 +335,19 @@ class Tweet(object):
         return tweets
 
     @staticmethod
-    def fetch_and_save() -> None:
-        tweets = Tweet.fetch()
-
-        with open("out.json", "w+", encoding="utf-8") as output_file:
+    def save_tweets(tweets: List[Tweet]):
+        with open("data.json", "w+", encoding="utf-8") as output_file:
             json.dump(
                 [tweet.to_dict() for tweet in tweets],
                 output_file,
                 ensure_ascii=False,
                 indent=4,
             )
+
+    @staticmethod
+    def fetch_and_save() -> None:
+        tweets = Tweet.fetch()
+        Tweet.save_tweets(tweets)
 
     def to_dict(self) -> Dict:
         return {
